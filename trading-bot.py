@@ -1,12 +1,13 @@
 import time
 import sys, getopt
 import datetime
+import gemini
+import requests
 from poloniex import poloniex
-
 
 def main(argv):
     period = 10
-    pair = "BTC_ETH"
+    pair = "USDT_BTC"
     prices = []
     currentMovingAverage = 0
     lengthOfMA = 0
@@ -17,6 +18,11 @@ def main(argv):
     typeOfTrade = False
     dataDate = ""
     orderNumber = ""
+    total = 100000
+    bitcoin = 10
+
+    # r = gemini.PrivateClient("JBCBbwEmXfD6IwS6Q4WN", "2YzrK8cq5jCRs8r8QKLKUtDDJxqV", sandbox=True)
+    # print(r)
 
     try:
         opts, args = getopt.getopt(argv, "hp:c:n:s:e:", ["period=", "currency=", "points="])
@@ -47,8 +53,7 @@ def main(argv):
                     '0348b3b5932f49b1e84feeacbec88a8b9eb0770d11fe553515f6a946b8b23eb2abe9748ee06417f1fd27310759e3b6535782c03de75c3499f42c714b0b6530a5')
 
     if (startTime):
-            historicalData = conn.api_query("returnChartData",
-                {"currencyPair": pair, "start": startTime, "end": endTime, "period": period})
+        historicalData = conn.api_query("returnChartData", {"currencyPair": pair, "start": startTime, "end": endTime, "period": period})
 
     while True:
         if (startTime and historicalData):
@@ -67,29 +72,34 @@ def main(argv):
             previousPrice = prices[-1]
             if (not tradePlaced):
                 if ((lastPairPrice > currentMovingAverage) and (lastPairPrice < previousPrice)):
-                    print("SELL ORDER")
-                    # orderNumber = conn.sell(pair,lastPairPrice,.01)
+                    print("SELL 1 BTC at " + str(lastPairPrice))
+                    #orderNumber = conn.sell(pair, lastPairPrice, .01)
+                    total = total + lastPairPrice
+                    bitcoin = bitcoin - 1
+                    print("Total funds: " + str(total))
+                    print("Total bitcoin: " + str(bitcoin))
                     tradePlaced = True
                     typeOfTrade = "short"
-                    # priceSoldAt = lastPairPrice
-                    # net = priceSoldAt - priceBoughtAt
-                    # print("Net: " + str(net) )
                 elif ((lastPairPrice < currentMovingAverage) and (lastPairPrice > previousPrice)):
                     print("BUY ORDER")
-                    # orderNumber = conn.buy(pair,lastPairPrice,.01)
+                    #orderNumber = conn.buy(pair, lastPairPrice, .01)
+                    print("BUY 1 BTC at " + str(lastPairPrice))
+                    total = total - lastPairPrice
+                    bitcoin = bitcoin + 1
+                    print("Total funds: " + str(total))
+                    print("Total bitcoin: " + str(bitcoin))
                     tradePlaced = True
                     typeOfTrade = "long"
-                    # priceBoughtAt = lastPairPrice
             elif (typeOfTrade == "short"):
                 if (lastPairPrice < currentMovingAverage):
                     print("EXIT TRADE")
-                    # conn.cancel(pair,orderNumber)
+                    #conn.cancel(pair, orderNumber)
                     tradePlaced = False
                     typeOfTrade = False
             elif (typeOfTrade == "long"):
                 if (lastPairPrice > currentMovingAverage):
                     print("EXIT TRADE")
-                    # conn.cancel(pair,orderNumber)
+                    #conn.cancel(pair, orderNumber)
                     tradePlaced = False
                     typeOfTrade = False
         else:
@@ -102,7 +112,6 @@ def main(argv):
         prices = prices[-lengthOfMA:]
         if (not startTime):
             time.sleep(int(period))
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
