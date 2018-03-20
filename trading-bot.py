@@ -3,7 +3,7 @@ import sys, getopt
 import datetime
 import gemini
 import requests
-from poloniex import poloniex
+from poloniex import poloniex ##Convenient python wrapper##
 
 def main(argv):
     period = 10
@@ -30,6 +30,7 @@ def main(argv):
         print('trading-bot.py -p <period length> -c <currency pair> -n <period of moving average>')
         sys.exit(2)
 
+    ##Parse arguments##
     for opt, arg in opts:
         if opt == '-h':
             print('trading-bot.py -p <period length> -c <currency pair> -n <period of moving average>')
@@ -43,25 +44,32 @@ def main(argv):
         elif opt in ("-c", "--currency"):
             pair = arg
         elif opt in ("-n", "--points"):
-            lengthOfMA = int(arg)
+            lengthOfMA = int(arg) ##Number of points used to calc Moving Average(MA)##
         elif opt in ("-s"):
-            startTime = arg
+            startTime = arg ##Has to be in UNIX Timestamp##
         elif opt in ("-e"):
-            endTime = arg
+            endTime = arg ##Has to be in UNIX Timestamp##
 
+    ##Connect with poloniex with its API keys##
     conn = poloniex('OICTWNLZ-NG2ATAQN-S3DYCUWH-QGWMPXD3',
                     '0348b3b5932f49b1e84feeacbec88a8b9eb0770d11fe553515f6a946b8b23eb2abe9748ee06417f1fd27310759e3b6535782c03de75c3499f42c714b0b6530a5')
 
     if (startTime):
+        ##Returns candlestick chart data##
         historicalData = conn.api_query("returnChartData", {"currencyPair": pair, "start": startTime, "end": endTime, "period": period})
+        # log = open("compare.txt", "w")
+        # print(historicalData, file = log)
 
     while True:
+        ##If startTime exists, this means that we are retrieving historical data##
         if (startTime and historicalData):
             nextDataPoint = historicalData.pop(0)
             lastPairPrice = nextDataPoint['weightedAverage']
             dataDate = datetime.datetime.fromtimestamp(int(nextDataPoint['date'])).strftime('%Y-%m-%d %H:%M:%S')
+        ##Error for wrong period of time##
         elif (startTime and not historicalData):
             exit()
+        ##Live data##
         else:
             currentValues = conn.api_query("returnTicker")
             lastPairPrice = currentValues[pair]["last"]
@@ -69,8 +77,9 @@ def main(argv):
 
         if (len(prices) > 0):
             currentMovingAverage = sum(prices) / float(len(prices))
-            previousPrice = prices[-1]
+            previousPrice = prices[-1] ## Latest price ##
             if (not tradePlaced):
+                ##If price > MA and price < exactly previous one##
                 if ((lastPairPrice > currentMovingAverage) and (lastPairPrice < previousPrice)):
                     print("SELL 1 BTC at " + str(lastPairPrice))
                     #orderNumber = conn.sell(pair, lastPairPrice, .01)
@@ -80,6 +89,7 @@ def main(argv):
                     print("Total bitcoin: " + str(bitcoin))
                     tradePlaced = True
                     typeOfTrade = "short"
+                ##If price < MA and price > exactly previous one##
                 elif ((lastPairPrice < currentMovingAverage) and (lastPairPrice > previousPrice)):
                     print("BUY ORDER")
                     #orderNumber = conn.buy(pair, lastPairPrice, .01)
@@ -105,11 +115,13 @@ def main(argv):
         else:
             previousPrice = 0
 
+        ##timestamp##
         print(
             "%s Period: %ss %s: %s Moving Average: %s" % (dataDate, period, pair, lastPairPrice, currentMovingAverage))
 
         prices.append(float(lastPairPrice))
-        prices = prices[-lengthOfMA:]
+        prices = prices[-lengthOfMA:] ##Last lengthOfMA prices##
+        ##Sleep for real time data, no sleep for historical data##
         if (not startTime):
             time.sleep(int(period))
 
