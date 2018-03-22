@@ -57,10 +57,10 @@ def main(argv):
             endTime = arg
 
     # establish connection to gemini exchange, sandbox=True indicates sandbox
-    r = gemini.PrivateClient("JBCBbwEmXfD6IwS6Q4WN", "2YzrK8cq5jCRs8r8QKLKUtDDJxqV", sandbox=True)
+    r = gemini.PrivateClient("Public Key", "Private Key", sandbox=True)
 
-    conn = poloniex('OICTWNLZ-NG2ATAQN-S3DYCUWH-QGWMPXD3',
-                    '0348b3b5932f49b1e84feeacbec88a8b9eb0770d11fe553515f6a946b8b23eb2abe9748ee06417f1fd27310759e3b6535782c03de75c3499f42c714b0b6530a5')
+    conn = poloniex('Public Key',
+                    'Private Key')
 
     if (startTime):
             historicalData = r.get_trade_history("BTCUSD", since="17/06/2017")
