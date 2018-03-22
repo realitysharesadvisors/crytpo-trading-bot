@@ -21,7 +21,9 @@ respectively.
 
 An example of running the program would be:
 
-python trading-bot.py -p 14400 -c BTC_USDT -n 15                      OR
+python trading-bot.py -p 14400 -c BTC_USDT -n 15 
+
+OR
 
 python trading-bot.py -p 1800 -c BTC_XMR -n 5 -s 1491048000 -e 1491091200
 
