@@ -92,6 +92,14 @@ def main(argv):
                 output.write("['" + point['date'] + "'," + point['price'] + "," + ma['price'])
                 output.write("],\n")
             output.write("""]);
+                var formatter = new google.visualization.NumberFormat({
+                    pattern: '##.######'
+                });
+
+                for (var i = 1; i < data.getNumberOfColumns(); i++) {
+                    formatter.format(data, i);
+                }
+
                 var options = {title: 'Price Chart', legend: { position: 'bottom' }};
                 var chart = new google.charts.Line(document.getElementById('curve_chart'));
                 chart.draw(data, options);}</script>
@@ -166,3 +174,4 @@ def main(argv):
         print("Total bitcoin: " + str(bitcoin) + "\n")
 if __name__ == "__main__":
     main(sys.argv[1:])
+    
