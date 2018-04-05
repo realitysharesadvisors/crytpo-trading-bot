@@ -29,7 +29,7 @@ python trading-bot.py -p 1800 -c BTC_XMR -n 5 -s 1491048000 -e 1491091200
 
 OR
 
-python trading-bot.py -p 1800 -c BTC_XMR -n 5 -s 1483228800 -e 1485863999
+python "trading-bot(50200strategy).py" -p 1800 -c BTC_XMR -n 5 -s 1483228800 -e 1485863999
 
 # Based on the video series by Cryptocurrency Trading
 https://www.youtube.com/watch?v=sVb-rRf--6s&list=PL2U3qLYtsXsT5QuFQUtxbfj62K3AiLOse
