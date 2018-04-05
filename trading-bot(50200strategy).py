@@ -10,8 +10,8 @@ def main(argv):
     pair = "USDT_BTC"
     prices = []
     currentMovingAverage = 0
-    currentFiftyMovingAverage = 0
-    currentTwoHundredMovingAverage = 0
+    currentFiftyMA = 0
+    currentTwoHundredMA = 0
     lengthOfMA = 0
     startTime = False
     endTime = False
@@ -124,29 +124,31 @@ def main(argv):
         dataPoints.append({'date':dataDate, 'price': str(lastPairPrice)})
 
         if (len(prices) > 0):
-            currentFiftyMovingAverage = sum(fiftyprices) / 50.0
-            currentTwoHundredMovingAverage = sum(twohundredprices) / 200.0
-            previousPrice = prices[-1] ## Latest price ##
-            # if (not tradePlaced):
-            #     ##If price > MA and price < exactly previous one##
-            #     if ((previousPrice < currentMovingAverage) and (currentMovingAverage < lastPairPrice) and (previousPrice < lastPairPrice)):
-            #         print("\nSELL 1 BTC at " + str(lastPairPrice))
-            #         #orderNumber = conn.sell(pair, lastPairPrice, .01)
-            #         total = total + lastPairPrice
-            #         bitcoin = bitcoin - 1
-            #         print("Total funds: " + str(total))
-            #         print("Total bitcoin: " + str(bitcoin))
-            #         # tradePlaced = True
-            #         # typeOfTrade = "short"
-            #     ##If price < MA and price > exactly previous one##
-            #     elif ((previousPrice > currentMovingAverage) and (currentMovingAverage > lastPairPrice) and (previousPrice > lastPairPrice) and (bitcoin > 0)):
-            #         print("\nBUY ORDER")
-            #         #orderNumber = conn.buy(pair, lastPairPrice, .01)
-            #         print("BUY 1 BTC at " + str(lastPairPrice))
-            #         total = total - lastPairPrice
-            #         bitcoin = bitcoin + 1
-            #         print("Total funds: " + str(total))
-            #         print("Total bitcoin: " + str(bitcoin))
+            currentFiftyMA = sum(fiftyprices) / 50.0
+            currentTwoHundredMA = sum(twohundredprices) / 200.0
+            # previousPrice = prices[-1] ## Latest price ##
+            previousFiftyMA = (float)(fiftyMaPoints[-1]['price']) ## Latest price ##
+            previousTwoHundredMA = (float)(twoHundredMaPoints[-1]['price']) ## Latest price ##
+            if (not tradePlaced):
+                ##If price > MA and price < exactly previous one##
+                if ((previousFiftyMA < previousTwoHundredMA) and (currentTwoHundredMA < currentFiftyMA)):
+                    print("\nSELL 1 BTC at " + str(lastPairPrice))
+                    #orderNumber = conn.sell(pair, lastPairPrice, .01)
+                    total = total + lastPairPrice
+                    bitcoin = bitcoin - 1
+                    print("Total funds: " + str(total))
+                    print("Total bitcoin: " + str(bitcoin))
+                    # tradePlaced = True
+                    # typeOfTrade = "short"
+                ##If price < MA and price > exactly previous one##
+                elif ((previousFiftyMA > previousTwoHundredMA) and (currentTwoHundredMA > currentFiftyMA)):
+                    print("\nBUY ORDER")
+                    #orderNumber = conn.buy(pair, lastPairPrice, .01)
+                    print("BUY 1 BTC at " + str(lastPairPrice))
+                    total = total - lastPairPrice
+                    bitcoin = bitcoin + 1
+                    print("Total funds: " + str(total))
+                    print("Total bitcoin: " + str(bitcoin))
                     # tradePlaced = True
                     # typeOfTrade = "long"
             # elif (typeOfTrade == "short"):
@@ -164,13 +166,13 @@ def main(argv):
         else:
             previousPrice = 0
 
-        fiftyMaPoints.append({'date':dataDate, 'price': str(currentFiftyMovingAverage)})
-        twoHundredMaPoints.append({'date':dataDate, 'price': str(currentTwoHundredMovingAverage)})
+        fiftyMaPoints.append({'date':dataDate, 'price': str(currentFiftyMA)})
+        twoHundredMaPoints.append({'date':dataDate, 'price': str(currentTwoHundredMA)})
 
         ##timestamp##
         print(
             # "%s Period: %ss %s: %s Moving Average: %s" % (dataDate, period, pair, lastPairPrice, currentMovingAverage))
-            "Previousprice: %s , %s: %s \nFifty Moving Average: %s \nTwo Hundred Moving Average: %s" % (previousPrice, pair, lastPairPrice, currentFiftyMovingAverage, currentTwoHundredMovingAverage))
+            "Previousprice: %s , %s: %s \nFifty Moving Average: %s \nTwo Hundred Moving Average: %s" % (previousPrice, pair, lastPairPrice, currentFiftyMA, currentTwoHundredMA))
 
         prices.append(float(lastPairPrice))
         fiftyprices = prices[-50:] ##Last lengthOfMA prices##
@@ -183,4 +185,3 @@ def main(argv):
         print("Total bitcoin: " + str(bitcoin) + "\n")
 if __name__ == "__main__":
     main(sys.argv[1:])
-    
