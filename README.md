@@ -31,5 +31,9 @@ OR
 
 python "trading-bot(50200strategy).py" -p 1800 -c BTC_XMR -n 5 -s 1483228800 -e 1485863999
 
+OR
+
+python "trading-bot(50200strategy).py" -p 1800 -c USDT_BTC -n 5 -s 1483228800 -e 1523231999
+
 # Based on the video series by Cryptocurrency Trading
 https://www.youtube.com/watch?v=sVb-rRf--6s&list=PL2U3qLYtsXsT5QuFQUtxbfj62K3AiLOse
